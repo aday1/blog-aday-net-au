@@ -20,6 +20,7 @@
     <h1>blog.aday.net.au</h1>
     <p>Blog at blog.aday.net.au.</p>
     <p>Domain: <code>blog.aday.net.au</code></p>
+    <p class="muted" id="deployMetaLine">Deploy metadata loading...</p>
     <div class="muted">
       <ul class="links">
         <li>Live (Cloudflare): <a href="https://blog.aday.net.au">https://blog.aday.net.au</a></li>
@@ -28,5 +29,22 @@
       </ul>
     </div>
   </main>
+  <script>
+    (function () {
+      var line = document.getElementById("deployMetaLine");
+      if (!line) return;
+      fetch("./deploy-meta.json", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error("missing")); })
+        .then(function (m) {
+          var dt = m.build_date ? new Date(m.build_date).toLocaleString() : "unknown-date";
+          var track = m.track || m.branch || "unknown-track";
+          var version = m.version || "unknown-version";
+          line.textContent = "Deploy: " + track + " | " + version + " | " + dt;
+        })
+        .catch(function () {
+          line.textContent = "Deploy metadata unavailable.";
+        });
+    })();
+  </script>
 </body>
 </html>
